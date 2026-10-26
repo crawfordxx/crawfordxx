@@ -3,3 +3,4 @@ src/raw/
 preview-*.html
 gh-*.html
 *.png
+__pycache__/

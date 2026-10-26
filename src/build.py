@@ -366,38 +366,12 @@ def card_studio() -> str:
     return d.render()
 
 
-def card_mingzhi() -> str:
-    d = Doc(1300, 380, "明知AI剪辑 mingzhi：说一遍就好，口误、背景、封面交给它。")
-    accent, bg = "#1F8A5B", "#EDF3EE"
-    frames = [("mzq-4.png", .5), ("mzq-6.png", .5), ("mzq-8.png", .5), ("mzq-10.png", .5),
-              ("mz-shot-live.png", .5), ("mz-shot-compare.png", .5)]
-    period = 18
-    d.css.append(cycle_css("m", len(frames), period, 0.45))
-    icon = (f'<path d="M58 124c6-14 12-14 18 0s12 14 18 0" fill="none" stroke="{bg}" stroke-width="5" stroke-linecap="round"/>'
-            f'<path d="M73 98v8" stroke="{bg}" stroke-width="5" stroke-linecap="round"/>')
-    card_shell(d, "04", "TALKING-HEAD EDIT", "mingzhi", ["说一遍就好，", "口误、背景、封面交给它。"],
-               "Talk once. It trims the stumbles and dresses the cut.",
-               ["LOCAL ASR", "OPEN SOURCE", "≈ ¥2 / VIDEO"], bg, "#13261C", "#5E7366", accent, icon)
-    d.add('<rect x="560" width="740" height="380" fill="#0E1210"/>')
-    fh = 316
-    fw = round(fh * 1.42)
-    fx, fy = 560 + (740 - fw) // 2, 22
-    rounded_clip(d, "mc", fx, fy, fw, fh, 12)
-    d.add('<g clip-path="url(#mc)">')
-    for i, (f, top) in enumerate(frames):
-        box = (0.125, 0.075, 0.875, 0.93) if f.startswith("mzq") else None
-        d.add(f'<image class="m{i}" href="{jpeg(RAW / f, fw, fh, 72, top, box)}" x="{fx}" y="{fy}" width="{fw}" height="{fh}"/>')
-    d.add('</g>')
-    d.text("原片 0:15 → 成片 0:12  ·  剪掉 4 处口误、换了背景  ·  用时 6 分钟，花费 ¥1.98", fx, fy + fh + 28, 15, "sansr", "#AFC3B6")
-    d.add('</g>')
-    return d.render()
-
 
 def main():
     OUT.mkdir(exist_ok=True)
     files = {"header.svg": header(), "footer.svg": footer(), "card-master.svg": card_master(),
-             "card-durex.svg": card_durex(), "card-studio.svg": card_studio(), "card-mingzhi.svg": card_mingzhi()}
-    for i in range(1, 5):
+             "card-durex.svg": card_durex(), "card-studio.svg": card_studio()}
+    for i in range(1, 4):
         files[f"divider-{i}.svg"] = divider(f"0{i}")
     files["divider-end.svg"] = divider("✓".replace("✓", "··"))
     for name, svg in files.items():

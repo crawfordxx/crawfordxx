@@ -38,17 +38,6 @@
 
 <a href="https://github.com/crawfordxx/xiaoma-design-master/tree/main/showcase/xiaoma-studio"><img src="https://img.shields.io/badge/▶_Watch_the_films-看成片-FF5A36?style=for-the-badge" alt="Watch the films"></a> <a href="https://github.com/crawfordxx/xiaoma-design-master/tree/main/skills/xiaoma-studio"><img src="https://img.shields.io/badge/skill-xiaoma--studio-101114?style=for-the-badge&logo=github" alt="xiaoma-studio skill"></a>
 
-<img src="assets/divider-4.svg" width="100%" alt="">
-
-## 🎙️ 明知AI剪辑 · mingzhi
-
-<a href="https://github.com/crawfordxx/mingzhi"><img src="assets/card-mingzhi.svg" width="100%" alt="明知AI剪辑：说一遍就好，口误、背景、封面交给它。"></a>
-
-<b>说一遍就好，口误、背景、封面交给它。</b>开源的口播精剪工作台：语音识别在本机跑，剪掉语气词和重复，换背景，自动分镜加卡片和封面，出一条能直接发的竖屏成片；哪里不满意，说一句就改。<br>
-<b>Talk once. It trims the stumbles and dresses the cut.</b> An open-source talking-head editor: local speech recognition, filler-word cuts, new backgrounds, cards and covers, revised by chat.
-
-<a href="https://github.com/crawfordxx/mingzhi#剪辑前后"><img src="https://img.shields.io/badge/▶_Before_%26_after-看剪辑前后-1F8A5B?style=for-the-badge" alt="Before and after"></a> <a href="https://github.com/crawfordxx/mingzhi"><img src="https://img.shields.io/github/stars/crawfordxx/mingzhi?style=for-the-badge&logo=github&label=mingzhi&color=1F8A5B" alt="mingzhi on GitHub"></a>
-
 <img src="assets/divider-end.svg" width="100%" alt="">
 
 ### 更多作品 · More
