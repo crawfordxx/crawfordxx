@@ -146,9 +146,22 @@ SKILLS = ["DESIGNER", "DIRECTOR", "SHORT-DRAMA", "EDITOR", "STUDIO", "OPUS3D", "
           "GEN-IMAGE", "GEN-COVER", "INFOGRAPHIC", "PPT", "VIDEO-SCRIPT", "WRITE-ARTICLE", "WRITE-XHS", "DE-AI"]
 
 
+def frames(folder: str) -> list[Path]:
+    return sorted((RAW / folder).glob("*.jpg"))
+
+
+def flipbook(d: Doc, name: str, files: list[Path], x: float, y: float, w: float, h: float, fps: float, q: int = 68):
+    """把一段样片的抽帧叠起来按 fps 轮播（帧间 0.1 秒交叉淡入，看起来像在播放）。"""
+    period = len(files) / fps
+    d.css.append(cycle_css(name, len(files), period, 0.1))
+    for i, f in enumerate(files):
+        d.add(f'<image class="{name}{i}" href="{jpeg(f, round(w), round(h), q)}" x="{x}" y="{y}" width="{w}" height="{h}"/>')
+    return period
+
+
 def header() -> str:
-    d = Doc(1300, 270, "小马 MJH · 不懂审美的程序员，不是好产品经理。I build AI creative skills with taste.")
-    rounded_clip(d, "hc", 0, 0, 1300, 270, 22)
+    d = Doc(1300, 400, "小马 MJH · 不懂审美的程序员，不是好产品经理。首屏在播 xiaoma-studio 的等轴 2.5D 样片《小马创作工厂》。")
+    rounded_clip(d, "hc", 0, 0, 1300, 400, 22)
     d.css.append("@keyframes ul{0%,10%{transform:scaleX(0)}28%,86%{transform:scaleX(1)}100%{transform:scaleX(0)}}"
                  ".ul{transform-box:fill-box;transform-origin:left center;animation:ul 7s cubic-bezier(.65,0,.35,1) infinite}"
                  "@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}"
@@ -156,42 +169,52 @@ def header() -> str:
                  "@keyframes stamp{0%,78%{transform:scale(1);opacity:1}82%{transform:scale(1.12);opacity:.55}"
                  "88%{transform:scale(.97);opacity:1}92%,100%{transform:scale(1)}}"
                  ".stamp{transform-box:fill-box;transform-origin:center;animation:stamp 7s cubic-bezier(.3,0,.2,1) infinite}"
-                 "@keyframes cur{0%,49.9%{opacity:1}50%,100%{opacity:0}}.cur{animation:cur 1.1s steps(1) infinite}")
+                 "@keyframes cur{0%,49.9%{opacity:1}50%,100%{opacity:0}}.cur{animation:cur 1.1s steps(1) infinite}"
+                 "@keyframes rec{0%,100%{opacity:1}50%{opacity:.25}}.rec{animation:rec 1.2s ease-in-out infinite}")
     d.add('<g clip-path="url(#hc)">')
-    d.add(f'<rect width="1300" height="270" fill="{PAPER}"/>')
+    d.add(f'<rect width="1300" height="400" fill="{PAPER}"/>')
     d.extra_defs.append(f'<pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">'
                         f'<circle cx="2" cy="2" r="1.1" fill="{RULE}"/></pattern>')
-    d.add('<rect width="1300" height="214" fill="url(#dots)" opacity=".9"/>')
-    # 印章
+    d.add('<rect width="640" height="344" fill="url(#dots)" opacity=".9"/>')
+    # 印章 + 名字
     d.add('<g class="stamp">')
-    d.add(f'<rect x="68" y="50" width="104" height="104" rx="14" fill="{SEAL}"/>')
-    d.add(f'<rect x="76" y="58" width="88" height="88" rx="9" fill="none" stroke="{PAPER}" stroke-width="2" opacity=".85"/>')
-    d.text("小", 120, 98, 40, "serif", PAPER, anchor="middle")
-    d.text("马", 120, 138, 40, "serif", PAPER, anchor="middle")
+    d.add(f'<rect x="64" y="52" width="96" height="96" rx="13" fill="{SEAL}"/>')
+    d.add(f'<rect x="71.5" y="59.5" width="81" height="81" rx="8" fill="none" stroke="{PAPER}" stroke-width="2" opacity=".85"/>')
+    d.text("小", 112, 96, 37, "serif", PAPER, anchor="middle")
+    d.text("马", 112, 133, 37, "serif", PAPER, anchor="middle")
     d.add('</g>')
-    d.text("MJH", 196, 122, 66, "serif", INK, track=0.02)
-    d.text("@crawfordxx", 200, 154, 17, "mono", MUTED, track=0.06)
-    # 分隔竖线
-    d.add(f'<path d="M520 52V164" stroke="{RULE}" stroke-width="1.5"/>')
-    # 口号
-    x0 = 562
-    w1 = d.text("不懂", x0, 104, 38, "serif", INK)
-    w2 = FACES["serif"].width("审美", 38)
-    d.add(f'<rect class="ul" x="{x0 + w1:.1f}" y="110" width="{w2:.1f}" height="6" rx="3" fill="{SEAL}"/>')
-    d.text("不懂审美的程序员，不是好产品经理。", x0, 104, 38, "serif", INK)
-    d.add(f'<rect class="cur" x="{x0 + FACES["serif"].width("不懂审美的程序员，不是好产品经理。", 38) + 8:.1f}" '
-          f'y="72" width="5" height="38" fill="{SEAL}"/>')
-    d.text("Taste is a feature. I build AI creative skills that ship it.", x0, 146, 21, "serifm", "#5A554B")
-    d.text("AI CREATIVE SKILLS  ·  AGENTS  ·  MOTION  ·  DESIGN", x0, 180, 14, "mono", MUTED, track=0.14)
+    d.text("MJH", 184, 116, 62, "serif", INK, track=0.02)
+    d.text("@crawfordxx", 188, 146, 17, "mono", MUTED, track=0.06)
+    # 口号（两行）
+    x0, s1, s2 = 64, "不懂审美的程序员，", "不是好产品经理。"
+    w1 = FACES["serif"].width("不懂", 36)
+    w2 = FACES["serif"].width("审美", 36)
+    d.add(f'<rect class="ul" x="{x0 + w1:.1f}" y="222" width="{w2:.1f}" height="6" rx="3" fill="{SEAL}"/>')
+    d.text(s1, x0, 216, 36, "serif", INK)
+    d.text(s2, x0, 262, 36, "serif", INK)
+    d.add(f'<rect class="cur" x="{x0 + FACES["serif"].width(s2, 36) + 8:.1f}" y="230" width="5" height="36" fill="{SEAL}"/>')
+    d.text("Taste is a feature. I build AI creative skills that ship it.", x0, 300, 19, "serifm", "#5A554B")
+    d.text("AI CREATIVE SKILLS  ·  AGENTS  ·  MOTION  ·  DESIGN", x0, 326, 13, "mono", MUTED, track=0.14)
+    # 右侧：等轴 2.5D 样片在播
+    vx, vw, vh = 640, 660, 344
+    period = flipbook(d, "iso", frames("iso"), vx, 0, vw, vh, fps=3)
+    d.extra_defs.append('<linearGradient id="vfade" x1="0" x2="0" y1="0" y2="1"><stop offset=".62" stop-color="#000" stop-opacity="0"/>'
+                        '<stop offset="1" stop-color="#000" stop-opacity=".55"/></linearGradient>')
+    d.add(f'<rect x="{vx}" width="{vw}" height="{vh}" fill="url(#vfade)"/>')
+    d.add(f'<circle class="rec" cx="{vx + 28}" cy="28" r="5" fill="{SEAL}"/>')
+    d.text("PLAYING", vx + 42, 33, 12.5, "mono", "#FFFFFF", track=0.16, opacity=.9)
+    d.text("等轴 2.5D《小马创作工厂》", vx + 28, vh - 44, 18, "sans", "#FFFFFF")
+    d.text("xiaoma-studio 样片 · 代码逐帧渲染 · 配乐也由代码合成", vx + 28, vh - 20, 13, "sansr", "#E6E1D6")
+    d.css.append(f"@keyframes vp{{from{{transform:scaleX(0)}}to{{transform:scaleX(1)}}}}"
+                 f".vp{{transform-box:fill-box;transform-origin:left;animation:vp {period}s linear infinite}}")
+    d.add(f'<rect class="vp" x="{vx}" y="{vh - 3}" width="{vw}" height="3" fill="{SEAL}"/>')
     # 底部滚动带：16 个技能名
-    d.add(f'<rect y="214" width="1300" height="56" fill="{INK}"/>')
-    band = "  ✦  ".join(f"XIAOMA-{s}" for s in SKILLS) + "  ✦  "
-    # ✦ 不在等宽字体里，换成中点
-    band = band.replace("✦", "•")
+    d.add(f'<rect y="344" width="1300" height="56" fill="{INK}"/>')
+    band = "  •  ".join(f"XIAOMA-{s}" for s in SKILLS) + "  •  "
     bw = FACES["mono"].width(band, 14, 0.12)
     d.add('<g class="mq">')
-    d.text(band, 24, 248, 14, "mono", PAPER, track=0.12)
-    d.text(band, 24 + bw + 14 * 0.12, 248, 14, "mono", PAPER, track=0.12)
+    d.text(band, 24, 378, 14, "mono", PAPER, track=0.12)
+    d.text(band, 24 + bw + 14 * 0.12, 378, 14, "mono", PAPER, track=0.12)
     d.add('</g>')
     d.add('</g>')
     return d.render()
@@ -325,46 +348,34 @@ def card_durex() -> str:
 
 
 def card_studio() -> str:
-    d = Doc(1300, 380, "xiaoma-studio：每一帧，都是时间的函数。")
+    d = Doc(1300, 380, "xiaoma-studio：每一帧，都是时间的函数。右侧在播两支样片：贴纸科普《地球上的水》、综艺花字《大小姐的下午茶》。")
     accent, bg = "#FF5A36", "#101114"
-    films = [("swiss-reel", [2, 4, 5, 8], "瑞士风 reel"), ("museum-compound", [1, 2, 4, 7], "博物馆纪录片《复利的形状》"),
-             ("editorial-weeks", [1, 3, 6, 7], "编辑部数据《人生只有 4000 周》"), ("blueprint-switch", [1, 4, 6, 8], "工程爆炸图 · 机械键盘轴"),
-             ("paper-cloud", [1, 3, 6, 8], "纸艺绘本《小云》")]
-    per, n_f = 0.55, 4
-    period = per * n_f * len(films)
-    d.css.append(cycle_css("s", len(films) * n_f, period, 0))
-    d.css.append(cycle_css("t", len(films), period, 0))
-    d.css.append(f"@keyframes ph{{from{{transform:translateX(0)}}to{{transform:translateX(500px)}}}}"
-                 f".ph{{animation:ph {period / len(films)}s linear infinite}}"
-                 "@keyframes rec{0%,100%{opacity:1}50%{opacity:.25}}.rec{animation:rec 1.2s ease-in-out infinite}")
     icon = f'<path d="M64 100l26 13-26 13z" fill="{bg}"/>'
     card_shell(d, "03", "MOTION", "xiaoma-studio", ["每一帧，", "都是时间的函数。"],
                "Every frame is a pure function of time. Code in, film out.",
                ["30 VIRAL FILMS", "15 STYLES", "HTML → MP4"], bg, "#F2EFEA", "#8E8A84", accent, icon)
     d.add('<rect x="560" width="740" height="380" fill="#08090B"/>')
-    fx, fy, fw = 670, 20, 500
-    fh = round(fw * 9 / 16)
-    rounded_clip(d, "sc", fx, fy, fw, fh, 10)
-    d.add('<g clip-path="url(#sc)">')
-    k = 0
-    for name, idx, _title in films:
-        for j in idx:
-            d.add(f'<image class="s{k}" href="{jpeg(RAW / f"st-{name}-{j}.jpg", fw, fh, 70)}" x="{fx}" y="{fy}" width="{fw}" height="{fh}"/>')
-            k += 1
+    d.css.append("@keyframes rec{0%,100%{opacity:1}50%{opacity:.25}}.rec{animation:rec 1.2s ease-in-out infinite}")
+    # 横屏：贴纸科普
+    lx, ly, lw, lh = 596, 60, 440, 248
+    rounded_clip(d, "lc", lx, ly, lw, lh, 10)
+    d.add('<g clip-path="url(#lc)">')
+    flipbook(d, "w", frames("wt"), lx, ly, lw, lh, fps=2.5)
     d.add('</g>')
-    d.add(f'<rect x="{fx}" y="{fy}" width="{fw}" height="{fh}" rx="10" fill="none" stroke="#2A2C31"/>')
-    d.add(f'<circle class="rec" cx="{fx + 22}" cy="{fy + 22}" r="5" fill="{accent}"/>')
-    ty = fy + fh + 14
-    d.add(f'<rect x="{fx}" y="{ty}" width="{fw}" height="3" rx="1.5" fill="#26282D"/>')
-    d.add(f'<g class="ph"><rect x="{fx - 1}" y="{ty - 7}" width="2.5" height="17" rx="1.2" fill="{accent}"/></g>')
-    for i, (_n, _idx, title) in enumerate(films):
-        d.add(f'<g class="t{i}">')
-        d.text(title, fx, ty + 30, 16, "sansr", "#C9C5BE")
-        d.text(f"0{i + 1} / 0{len(films)}", fx + fw, ty + 30, 13.5, "mono", "#77736D", anchor="end", track=0.1)
-        d.add('</g>')
+    d.add(f'<rect x="{lx}" y="{ly}" width="{lw}" height="{lh}" rx="10" fill="none" stroke="#2A2C31"/>')
+    d.add(f'<circle class="rec" cx="{lx + 20}" cy="{ly + 20}" r="5" fill="{accent}"/>')
+    d.text("贴纸科普《地球上的水》", lx, 340, 15.5, "sansr", "#C9C5BE")
+    d.text("16:9 · 15s", lx + lw, 340, 12.5, "mono", "#77736D", anchor="end", track=0.1)
+    # 竖屏：综艺花字，放进手机框
+    px, py, pw, ph = 1072, 22, 180, 320
+    d.add(f'<rect x="{px - 8}" y="{py - 8}" width="{pw + 16}" height="{ph + 16}" rx="26" fill="#1B1C20" stroke="#2E3036"/>')
+    rounded_clip(d, "pc", px, py, pw, ph, 18)
+    d.add('<g clip-path="url(#pc)">')
+    flipbook(d, "h", frames("hz"), px, py, pw, ph, fps=3)
+    d.add('</g>')
+    d.text("综艺花字《大小姐的下午茶》", px + pw / 2, 368, 13.5, "sansr", "#C9C5BE", anchor="middle")
     d.add('</g>')
     return d.render()
-
 
 
 def main():

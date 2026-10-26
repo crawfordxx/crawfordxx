@@ -33,7 +33,7 @@
 
 <a href="https://github.com/crawfordxx/xiaoma-design-master/tree/main/skills/xiaoma-studio"><img src="assets/card-studio.svg" width="100%" alt="xiaoma-studio：每一帧，都是时间的函数。"></a>
 
-<b>每一帧，都是时间的函数。</b>从 30 条高赞动效视频里逐帧拆出的工作流：先写分镜，再看拼图，最后出片；配乐和音效也由代码合成，15 张经典风格卡、独立评委打分，不过线不交付。<br>
+<b>每一帧，都是时间的函数。</b>首屏和下面在播的三支样片都是它做的。从 30 条高赞动效视频里逐帧拆出的工作流：先写分镜，再看拼图，最后出片；配乐和音效也由代码合成，15 张经典风格卡、独立评委打分，不过线不交付。<br>
 <b>Every frame is a pure function of time.</b> A workflow distilled from 30 viral motion films: storyboard first, contact sheets before renders, code-synthesised sound, 15 style cards and an independent jury.
 
 <a href="https://github.com/crawfordxx/xiaoma-design-master/tree/main/showcase/xiaoma-studio"><img src="https://img.shields.io/badge/▶_Watch_the_films-看成片-FF5A36?style=for-the-badge" alt="Watch the films"></a> <a href="https://github.com/crawfordxx/xiaoma-design-master/tree/main/skills/xiaoma-studio"><img src="https://img.shields.io/badge/skill-xiaoma--studio-101114?style=for-the-badge&logo=github" alt="xiaoma-studio skill"></a>
